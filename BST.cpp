@@ -3,7 +3,6 @@
 #include<vector>
 #include<queue>
 using namespace std;
-
 class BSTnode
 {
 public:
@@ -75,19 +74,6 @@ private:
 
 	}
 
-	// BSTnode* Convert_Sorted_Array_to_BST_Under_The_Hood(BSTnode* currRoot,vector<int>&nodes,int start,int end)
-	// {
-	// 	if(start>end)
-	// 	{
-	// 		return NULL;
-	// 	}
-	// 	else
-	// 	{
-	// 		int midNode=(start+end)/2;
-	// 		currRoot->left=this->Convert_Sorted_Array_to_BST_Under_The_Hood()
-	// 	}
-	// }
-
 	BSTnode* Search_under_the_hood(int value,BSTnode* currRoot)
 	{
 		if(currRoot!=NULL)
@@ -131,6 +117,14 @@ public:
 		return newNode;
 	}
 
+	BSTnode* createNode(int value)
+	{
+		BSTnode* newNode = new BSTnode();
+		newNode->left = newNode->right = NULL;
+		newNode->data=value;
+		return newNode;
+	}
+
 	void insert(int value)
 	{
 		this->insert_under_the_hood(this->root, value);
@@ -141,25 +135,88 @@ public:
 		this->InOrderTraversal_UnderTheHood(this->root);
 	}
 
-	int height(BSTnode* node){
+	int height_under_the_hood(BSTnode* node){
 		if(node==NULL)
 		{
 			return -1;
 		}
+		return 1+max(this->height_under_the_hood(node->left),this->height_under_the_hood(node->right));
 	}
 
-	BSTnode* Search(int value)
+	int height(int value)
 	{
-		return this->Search_under_the_hood(value,this->root);
+		BSTnode *Required_Node=this->Search_under_the_hood(value,this->root);
+		if(Required_Node==NULL)
+		{
+			return -1;
+		}
+		return this->height_under_the_hood(Required_Node);
 	}
 
-	// void Convert_Sorted_Array_to_BST(vector<int>&nodes)
+
+	bool Search(int value)
+	{
+		if(this->Search_under_the_hood(value,this->root)!=NULL)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	void Convert_BST_To_Sorted_Array_under_the_hood (vector<int>&nodes,BSTnode* CurrRoot)
+	{
+		if (CurrRoot == NULL)
+		{
+			return;
+		}
+		else
+		{
+			this->Convert_BST_To_Sorted_Array_under_the_hood(nodes,CurrRoot->left);
+			nodes.push_back(CurrRoot->data);
+			this->Convert_BST_To_Sorted_Array_under_the_hood(nodes,CurrRoot->right);
+		}		
+	}
+
+	vector<int> Convert_BST_To_Sorted_Array()
+	{
+		vector<int>Sorted_Nodes;
+		this->Convert_BST_To_Sorted_Array_under_the_hood(Sorted_Nodes,this->root);
+		return Sorted_Nodes;
+	}
+
+	// BSTnode* Convert_SortedArray_To_BST(vector<int>&nodes,int start,int end)
 	// {
-	// 	this->root=
-	// 	this->Convert_Sorted_Array_to_BST_Under_The_Hood(root,nodes,0,nodes.size()-1);
+	// 	if(start>end)
+	// 	{
+	// 		return NULL;
+	// 	}
+	// 	else
+	// 	{
+	// 		// get the index of middle item of sorted array
+	// 		int Index_of_Mid_node=(start+end)/2;
+	// 		// create the current root 
+	// 		BSTnode *currRoot=this->createNode(nodes[Index_of_Mid_node]);
+	// 		currRoot->left=Convert_SortedArray_To_BST(nodes,start,Index_of_Mid_node-1);
+	// 		currRoot->right=Convert_SortedArray_To_BST(nodes,Index_of_Mid_node+1,end);
+	// 		return currRoot;
+	// 	}
 	// }
 
+	// void PreOrder(BSTnode *currRoot)
+	// {
+	// 	if(currRoot==NULL)
+	// 	{
+	// 		return;
+	// 	}
+	// 	else
+	// 	{
+	// 		cout<<currRoot->data<<endl;
+	// 		PreOrder(currRoot->left);
+	// 		PreOrder(currRoot->right);
+	// 	}
+	// }
 };
+
 
 int main()
 {
@@ -169,6 +226,12 @@ int main()
 	bst.insert(12);
 	bst.insert(5);
 	bst.insert(8);
-	bst.InOrderTraversal();
+	vector<int>SortedNodes=bst.Convert_BST_To_Sorted_Array();
+	for(int i=0; i<SortedNodes.size();i++)
+	{
+		cout<<SortedNodes[i]<<" ";
+	}
+	cout<<endl;
+	cout<<"Height of 10 is : "<<bst.height(12);
 	return 0;
 }
